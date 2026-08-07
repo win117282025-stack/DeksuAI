@@ -1,0 +1,6 @@
+{
+  "name": "DeksuAI",
+  "description": "An intelligent AI assistant integrated with a custom knowledge base and custom anonymous authentication.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
