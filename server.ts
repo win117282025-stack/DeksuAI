@@ -15,7 +15,9 @@ const PORT = 3000;
 app.use(express.json({ limit: "10mb" }));
 
 // Local database path
-const DB_FILE = path.join(process.cwd(), "db_local.json");
+const DB_FILE = process.env.VERCEL
+  ? path.join("/tmp", "db_local.json")
+  : path.join(process.cwd(), "db_local.json");
 
 interface LocalDB {
   users: Record<
@@ -119,6 +121,20 @@ function loadDB(): LocalDB {
       const data = fs.readFileSync(DB_FILE, "utf-8");
       const db = JSON.parse(data);
       let updated = false;
+
+      if (!db.users) {
+        db.users = {};
+        updated = true;
+      }
+      if (!db.documents) {
+        db.documents = [];
+        updated = true;
+      }
+      if (!db.chats) {
+        db.chats = {};
+        updated = true;
+      }
+
       DEFAULT_DOCS.forEach((defaultDoc) => {
         if (!db.documents.some((d: any) => d.id === defaultDoc.id)) {
           db.documents.push(defaultDoc);
