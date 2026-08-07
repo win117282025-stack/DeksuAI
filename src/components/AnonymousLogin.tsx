@@ -22,7 +22,7 @@ import {
 } from "./Icons";
 import { apiUrl } from "../utils/api";
 import { UserSession } from "../types";
-import { supabase } from "../lib/supabase";
+import { supabase, isPlaceholderSupabase } from "../lib/supabase";
 
 interface AnonymousLoginProps {
   onLoginSuccess: (session: UserSession) => void;
@@ -96,6 +96,20 @@ export default function AnonymousLogin({
     setError(null);
 
     try {
+      if (isPlaceholderSupabase) {
+        // Mock success for placeholder mode
+        const mockUser = {
+          id: `mock-${Date.now()}`,
+          email: activeTab === "login" ? loginEmail : (activeTab === "register" ? regEmail : `guest-${Date.now()}@example.com`),
+          username: activeTab === "guest" ? guestUsername : (activeTab === "register" ? regUsername : "User"),
+          avatar: activeTab === "guest" ? guestAvatar : (activeTab === "register" ? selectedAvatar : "🤖"),
+          createdAt: new Date().toISOString(),
+        };
+        onLoginSuccess(mockUser);
+        setIsLoading(false);
+        return;
+      }
+
       let userData;
       
       if (activeTab === "login") {

@@ -21,7 +21,7 @@ import SettingsManager from "./components/SettingsManager";
 import ProfileModal from "./components/ProfileModal";
 import { UserSession, ChatSession, KnowledgeDocument } from "./types";
 
-import { supabase } from "./lib/supabase";
+import { supabase, isPlaceholderSupabase } from "./lib/supabase";
 
 const storage = {
   getItem: (key: string): string | null => {
@@ -301,9 +301,11 @@ export default function App() {
     setIsLogoutConfirmOpen(false);
     
     try {
-      const { data } = await supabase.auth.getSession();
-      if (data?.session) {
-        await supabase.auth.signOut();
+      if (!isPlaceholderSupabase) {
+        const { data } = await supabase.auth.getSession();
+        if (data?.session) {
+          await supabase.auth.signOut();
+        }
       }
     } catch (err) {
       console.error("Logout error", err);
